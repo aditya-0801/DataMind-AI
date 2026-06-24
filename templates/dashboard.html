@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>DataMind AI Dashboard</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+body{
+    background:#0f172a;
+    color:white;
+    font-family:'Segoe UI',sans-serif;
+}
+
+.dashboard-title{
+    text-align:center;
+    margin-top:30px;
+    margin-bottom:40px;
+    font-weight:bold;
+}
+
+.card{
+    background:#1e293b;
+    border:none;
+    border-radius:20px;
+    color:white;
+    box-shadow:0 4px 20px rgba(0,0,0,0.3);
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+}
+
+.stat-number{
+    font-size:38px;
+    font-weight:bold;
+    color:#38bdf8;
+}
+
+.section-title{
+    margin-top:40px;
+    margin-bottom:20px;
+}
+
+.table{
+    border-radius:15px;
+    overflow:hidden;
+}
+
+.insight-box{
+    background:#1e293b;
+    padding:20px;
+    border-radius:20px;
+}
+
+.heatmap-img{
+    border-radius:15px;
+    width:100%;
+}
+
+.btn-custom{
+    background:#38bdf8;
+    border:none;
+    color:black;
+    font-weight:bold;
+}
+
+.btn-custom:hover{
+    background:#0ea5e9;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1 class="dashboard-title">
+        🚀 DataMind AI Dashboard
+    </h1>
+
+    <!-- KPI CARDS -->
+
+    <div class="row g-4">
+
+        <div class="col-md-3">
+            <div class="card p-4 text-center">
+                <div class="stat-number">{{ rows }}</div>
+                <p>Total Rows</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card p-4 text-center">
+                <div class="stat-number">{{ cols }}</div>
+                <p>Total Columns</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card p-4 text-center">
+                <div class="stat-number">{{ missing }}</div>
+                <p>Missing Values</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card p-4 text-center">
+                <div class="stat-number">{{ duplicates }}</div>
+                <p>Duplicate Rows</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- DATASET INFO -->
+
+    <div class="row g-4 mt-3">
+
+        <div class="col-md-6">
+            <div class="card p-4">
+                <h4>🏷 Dataset Type</h4>
+                <h5>{{ dataset_type }}</h5>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card p-4 text-center">
+                <div class="stat-number">{{ numeric_cols }}</div>
+                <p>Numeric Columns</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card p-4 text-center">
+                <div class="stat-number">{{ categorical_cols }}</div>
+                <p>Categorical Columns</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- AI INSIGHTS -->
+
+    <div class="section-title">
+        <h2>🧠 AI Insights</h2>
+    </div>
+    <div class="section-title">
+    <h2>🤖 Gemini AI Analysis</h2>
+    </div>
+
+    <div class="card p-4">
+
+    <pre style="
+    white-space: pre-wrap;
+    color:white;
+    ">
+
+{{ ai_summary }}
+
+    </pre>
+
+</div>
+
+    <div class="insight-box">
+
+        <ul>
+
+        {% for insight in insights %}
+            <li>{{ insight }}</li>
+        {% endfor %}
+
+        </ul>
+
+    </div>
+    <div class="section-title">
+    <h2>💬 Chat With Dataset</h2>
+</div>
+
+<div class="card p-4">
+
+    <input
+        type="text"
+        id="question"
+        class="form-control"
+        placeholder="Ask about your dataset">
+
+    <button
+        onclick="askQuestion()"
+        class="btn btn-primary mt-3">
+
+        Ask Question
+
+    </button>
+
+    <div
+        id="answer"
+        class="mt-4">
+    </div>
+
+</div>
+
+    <!-- DATASET PREVIEW -->
+
+    <div class="section-title">
+        <h2>📊 Dataset Preview</h2>
+        <div class="section-title">
+    <h2>📈 Statistical Summary</h2>
+       <div class="section-title">
+    <h2>🗂 Data Types</h2>
+</div>
+
+<div class="table-responsive">
+    {{ datatype_table|safe }}
+</div>
+</div>
+
+<div class="table-responsive">
+    {{ summary_table|safe }}
+</div>
+    </div>
+
+    <div class="table-responsive">
+
+        {{ table|safe }}
+
+    </div>
+
+    <!-- HEATMAP -->
+
+    {% if heatmap_available %}
+
+    <div class="section-title">
+        <h2>📈 Correlation Heatmap</h2>
+    </div>
+
+    <div class="card p-4">
+
+        <img
+        src="{{ url_for('static', filename='heatmap.png') }}"
+        class="heatmap-img">
+
+    </div>
+
+    {% endif %}
+
+    <div class="section-title">
+    <h2>📊 Histogram</h2>
+</div>
+<!-- BOX PLOT -->
+
+<div class="section-title">
+    <h2>📦 Box Plot</h2>
+</div>
+
+<div class="card p-4">
+
+    <img
+    src="{{ url_for('static', filename='boxplot.png') }}"
+    class="heatmap-img">
+
+</div>
+
+
+<!-- SCATTER PLOT -->
+
+<div class="section-title">
+    <h2>📈 Scatter Plot</h2>
+</div>
+
+<div class="card p-4">
+
+    <img
+    src="{{ url_for('static', filename='scatter.png') }}"
+    class="heatmap-img">
+
+</div>
+
+
+<!-- PIE CHART -->
+
+<div class="section-title">
+    <h2>🥧 Pie Chart</h2>
+</div>
+
+<div class="card p-4">
+
+    <img
+    src="{{ url_for('static', filename='piechart.png') }}"
+    class="heatmap-img">
+
+</div>
+
+<div class="card p-4">
+
+    <img
+    src="{{ url_for('static', filename='histogram.png') }}"
+    class="heatmap-img">
+
+</div>
+
+    <!-- MACHINE LEARNING SECTION -->
+
+<div class="section-title">
+    <h2>🤖 Machine Learning Models</h2>
+</div>
+
+<div class="card p-4">
+
+<table class="table table-dark table-striped">
+
+<thead>
+
+<tr>
+<th>Model</th>
+<th>Score (%)</th>
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for model, acc in accuracies.items() %}
+
+<tr>
+
+<td>{{ model }}</td>
+
+<td>{{ acc }}</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+<div class="card p-4 mt-4">
+
+<h3>
+🏆 Best Model
+</h3>
+
+<h2 style="color:#38bdf8">
+{{ best_model }}
+</h2>
+
+</div>
+
+   <div class="text-center mt-5 mb-5">
+
+    <a href="/download-report"
+       class="btn btn-success btn-lg me-3">
+
+       📄 Download PDF Report
+
+    </a>
+
+    <a href="/"
+       class="btn btn-custom btn-lg">
+
+       Upload Another Dataset
+
+    </a>
+
+</div>
+
+</div>
+<script>
+
+function askQuestion() {
+
+    let question =
+    document.getElementById(
+        "question"
+    ).value;
+
+    fetch(
+        "/chat?q=" + encodeURIComponent(question)
+    )
+
+    .then(response => response.text())
+
+    .then(data => {
+
+        document.getElementById(
+            "answer"
+        ).innerHTML =
+
+        "<div class='alert alert-info mt-3'>"
+        + data +
+        "</div>";
+
+    });
+
+}
+
+</script>
+
+</body>
+</html>
