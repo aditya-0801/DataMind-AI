@@ -94,4 +94,32 @@ http://localhost:5000
 
 ---
 
-## 📁 Project Structure
+---
+
+## 🔮 Future Scope
+
+- [ ] User authentication & login
+- [ ] Database integration
+- [ ] Cloud deployment (Heroku/Render)
+- [ ] Analysis history & saved sessions
+- [ ] Deep Learning model support
+- [ ] API endpoint for external integrations
+
+---
+
+## 👤 Author
+
+**Aditya Kharadkar**
+- LinkedIn: [linkedin.com/in/aditya-kharadkar-1a174b321](https://linkedin.com/in/aditya-kharadkar-1a174b321)
+- GitHub: [@aditya-0801](https://github.com/aditya-0801)
+- Email: adityakharadkar2@gmail.com
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+⭐ If you found this project useful, please consider giving it a star!
